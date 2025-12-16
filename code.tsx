@@ -45,32 +45,35 @@ function Widget() {
       }))
     : [];
 
-  usePropertyMenu(
-    [
-      {
-        itemType: "dropdown",
-        propertyName: "icon",
-        tooltip: "Select Icon",
-        selectedOption: iconKey,
-        options: iconOptions,
-      },
-      {
-        itemType: "action",
-        propertyName: "editDetails",
-        tooltip: "Edit Details",
-      },
-    ],
-    ({ propertyName, propertyValue }) => {
-      if (propertyName === "icon" && typeof propertyValue === "string") {
-        setIconKey(propertyValue);
-        if (icons) {
-          setTitle(icons[propertyValue].name);
+  // Only show property menu when icons are loaded
+  if (icons && iconOptions.length > 0) {
+    usePropertyMenu(
+      [
+        {
+          itemType: "dropdown",
+          propertyName: "icon",
+          tooltip: "Select Icon",
+          selectedOption: iconKey,
+          options: iconOptions,
+        },
+        {
+          itemType: "action",
+          propertyName: "editDetails",
+          tooltip: "Edit Details",
+        },
+      ],
+      ({ propertyName, propertyValue }) => {
+        if (propertyName === "icon" && typeof propertyValue === "string") {
+          setIconKey(propertyValue);
+          if (icons) {
+            setTitle(icons[propertyValue].name);
+          }
+        } else if (propertyName === "editDetails") {
+          setIsEditingDetails(!isEditingDetails);
         }
-      } else if (propertyName === "editDetails") {
-        setIsEditingDetails(!isEditingDetails);
       }
-    }
-  );
+    );
+  }
 
   const currentIcon = icons ? icons[iconKey] : null;
 
