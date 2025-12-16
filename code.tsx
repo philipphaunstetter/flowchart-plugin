@@ -1,5 +1,5 @@
 const { widget } = figma;
-const { useSyncedState, usePropertyMenu, AutoLayout, Text: WidgetText, SVG, Input } = widget;
+const { useSyncedState, usePropertyMenu, useEffect, AutoLayout, Text: WidgetText, SVG, Input } = widget;
 
 interface Icon {
   name: string;
@@ -19,21 +19,23 @@ function Widget() {
   const [isLoading, setIsLoading] = useSyncedState<boolean>("isLoading", false);
 
   // Fetch icons from API on mount
-  if (icons === null && !isLoading) {
-    setIsLoading(true);
-    const apiBaseUrl = "https://flowchart-backend.vercel.app";
-    
-    fetch(`${apiBaseUrl}/api/icons`)
-      .then((res) => res.json())
-      .then((data: IconsResponse) => {
-        setIcons(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch icons:", err);
-        setIsLoading(false);
-      });
-  }
+  useEffect(() => {
+    if (icons === null && !isLoading) {
+      setIsLoading(true);
+      const apiBaseUrl = "http://localhost:3000";
+      
+      fetch(`${apiBaseUrl}/api/icons`)
+        .then((res) => res.json())
+        .then((data: IconsResponse) => {
+          setIcons(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch icons:", err);
+          setIsLoading(false);
+        });
+    }
+  });
 
   // Build property menu for icon selection
   const iconOptions = icons

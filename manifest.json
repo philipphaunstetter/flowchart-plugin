@@ -11,6 +11,9 @@
   "networkAccess": {
     "allowedDomains": [
       "https://flowchart-backend.vercel.app"
+    ],
+    "devAllowedDomains": [
+      "http://localhost:3000"
     ]
   }
 }
