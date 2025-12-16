@@ -1,17 +1,19 @@
 {
   "name": "Smart Flowchart Nodes",
-  "id": "flowchart-widget",
+  "id": "flowchart-plugin",
   "api": "1.0.0",
   "widgetApi": "1.0.0",
-  "main": "code.js",
+  "main": "plugin.js",
+  "ui": "ui.html",
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": ["figjam"],
   "containsWidget": true,
   "networkAccess": {
     "allowedDomains": [
-      "https://flowchart-backend.vercel.app"
+      "https://flowchart-backend.vercel.app/api/icons"
     ],
+    "reasoning": "Widget fetches icon SVG data from the backend API.",
     "devAllowedDomains": [
       "http://localhost:3000"
     ]

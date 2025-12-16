@@ -1,4 +1,5 @@
 node_modules/
-code.js
+plugin.js
+widget.js
 .env
 .DS_Store
