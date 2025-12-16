@@ -8,41 +8,32 @@
   // code.ts
   var require_code = __commonJS({
     "code.ts"() {
-      var ICONS = {
-        database: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>`,
-        server: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>`,
-        user: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
-      };
-      function createFlowchartNode(iconKey, title, x, y) {
-        const frame = figma.createFrame();
-        frame.name = `${title} Node`;
-        frame.x = x;
-        frame.y = y;
-        frame.resize(150, 100);
-        frame.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
-        frame.cornerRadius = 8;
-        frame.strokes = [{ type: "SOLID", color: { r: 0.88, g: 0.88, b: 0.88 } }];
-        frame.strokeWeight = 1;
-        frame.setPluginData("nodeType", iconKey);
-        frame.setPluginData("title", title);
-        const icon = figma.createNodeFromSvg(ICONS[iconKey]);
-        icon.x = 43;
-        icon.y = 10;
-        icon.resize(64, 64);
-        frame.appendChild(icon);
-        const text = figma.createText();
-        text.characters = title;
-        text.fontSize = 14;
-        text.fontName = { family: "Inter", style: "Semi Bold" };
-        text.x = 0;
-        text.y = 80;
-        text.resize(150, 20);
-        text.textAlignHorizontal = "CENTER";
-        frame.appendChild(text);
-        figma.currentPage.appendChild(frame);
-        return frame;
+      async function createFlowchartNode(iconKey, title, x, y) {
+        await figma.loadFontAsync({ family: "Inter", style: "Regular" });
+        const node = figma.createShapeWithText();
+        node.x = x;
+        node.y = y;
+        node.resize(200, 150);
+        node.shapeType = "ROUNDED_RECTANGLE";
+        node.setPluginData("nodeType", iconKey);
+        node.setPluginData("title", title);
+        node.text.characters = `${getIconEmoji(iconKey)} ${title}`;
+        node.text.fontSize = 16;
+        node.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+        node.strokes = [{ type: "SOLID", color: { r: 0.8, g: 0.8, b: 0.8 } }];
+        node.strokeWeight = 2;
+        figma.currentPage.appendChild(node);
+        return node;
       }
-      function createConnectedNode(sourceNode, direction) {
+      function getIconEmoji(iconKey) {
+        const emojis = {
+          database: "\u{1F4BE}",
+          server: "\u{1F5A5}\uFE0F",
+          user: "\u{1F464}"
+        };
+        return emojis[iconKey];
+      }
+      async function createConnectedNode(sourceNode, direction) {
         const sourceType = sourceNode.getPluginData("nodeType") || "database";
         const spacing = 200;
         let x = sourceNode.x;
@@ -52,7 +43,7 @@
         } else {
           y += sourceNode.height + spacing;
         }
-        const newNode = createFlowchartNode(sourceType, sourceType.charAt(0).toUpperCase() + sourceType.slice(1), x, y);
+        const newNode = await createFlowchartNode(sourceType, sourceType.charAt(0).toUpperCase() + sourceType.slice(1), x, y);
         const connector = figma.createConnector();
         connector.connectorStart = {
           endpointNodeId: sourceNode.id,
@@ -65,20 +56,21 @@
         figma.currentPage.selection = [newNode];
         figma.viewport.scrollAndZoomIntoView([newNode]);
       }
-      figma.showUI(__html__, { width: 300, height: 400 });
-      figma.ui.onmessage = (msg) => {
+      figma.showUI(__html__, { width: 240, height: 200 });
+      figma.ui.onmessage = async (msg) => {
         if (msg.type === "create-node") {
           const { iconKey, title } = msg;
           const viewport = figma.viewport.center;
-          const node = createFlowchartNode(iconKey, title, viewport.x - 75, viewport.y - 50);
+          const node = await createFlowchartNode(iconKey, title, viewport.x - 75, viewport.y - 50);
           figma.currentPage.selection = [node];
           figma.viewport.scrollAndZoomIntoView([node]);
+          figma.notify(`Created ${title} node. Select it and press \u2192 or \u2193 to add connected nodes.`);
         }
         if (msg.type === "create-connected") {
           const { direction } = msg;
           const selection = figma.currentPage.selection;
-          if (selection.length === 1 && selection[0].type === "FRAME" && selection[0].getPluginData("nodeType")) {
-            createConnectedNode(selection[0], direction);
+          if (selection.length === 1 && selection[0].type === "SHAPE_WITH_TEXT" && selection[0].getPluginData("nodeType")) {
+            await createConnectedNode(selection[0], direction);
           } else {
             figma.notify("Please select a flowchart node first");
           }
@@ -87,6 +79,19 @@
           figma.closePlugin();
         }
       };
+      figma.on("run", ({ command }) => {
+        if (command === "add-right") {
+          const selection = figma.currentPage.selection;
+          if (selection.length === 1 && selection[0].type === "SHAPE_WITH_TEXT" && selection[0].getPluginData("nodeType")) {
+            createConnectedNode(selection[0], "right");
+          }
+        } else if (command === "add-bottom") {
+          const selection = figma.currentPage.selection;
+          if (selection.length === 1 && selection[0].type === "SHAPE_WITH_TEXT" && selection[0].getPluginData("nodeType")) {
+            createConnectedNode(selection[0], "bottom");
+          }
+        }
+      });
     }
   });
   require_code();
