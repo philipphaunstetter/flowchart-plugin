@@ -1,0 +1,31 @@
+{
+  "name": "flowchart-widget",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/philipphaunstetter/flowchart-widget.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/philipphaunstetter/flowchart-widget/issues"
+  },
+  "homepage": "https://github.com/philipphaunstetter/flowchart-widget#readme",
+  "devDependencies": {
+    "@figma/widget-typings": "^1.12.1",
+    "@types/react": "^19.2.7",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.27.1",
+    "react": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}

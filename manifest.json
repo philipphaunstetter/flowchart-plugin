@@ -1,0 +1,14 @@
+{
+  "name": "Smart Flowchart Nodes",
+  "id": "flowchart-widget",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figjam"],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://flowchart-backend.vercel.app"
+    ]
+  }
+}
