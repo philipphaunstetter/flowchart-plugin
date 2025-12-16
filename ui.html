@@ -2,10 +2,84 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: Inter, sans-serif;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .node-types {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .node-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      text-align: center;
+    }
+    .node-btn:hover {
+      background: #f0f0f0;
+    }
+    .outlets {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #0d99ff;
+      border-radius: 6px;
+      background: #0d99ff;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #0b7dd4;
+    }
+  </style>
 </head>
 <body>
+  <div class="section">
+    <h3>Create Node</h3>
+    <div class="node-types">
+      <div class="node-btn" onclick="createNode('database')">💾<br>Database</div>
+      <div class="node-btn" onclick="createNode('server')">🖥️<br>Server</div>
+      <div class="node-btn" onclick="createNode('user')">👤<br>User</div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h3>Add Connected Node</h3>
+    <p style="font-size: 11px; color: #666; margin: 0 0 8px 0;">Select a node first</p>
+    <div class="outlets">
+      <button onclick="createConnected('right')">→ Right</button>
+      <button onclick="createConnected('bottom')">↓ Bottom</button>
+    </div>
+  </div>
+  
   <script>
-    // Hidden UI - just handles messages from widget
+    function createNode(iconKey) {
+      const title = iconKey.charAt(0).toUpperCase() + iconKey.slice(1);
+      parent.postMessage({ pluginMessage: { type: 'create-node', iconKey, title } }, '*');
+    }
+    
+    function createConnected(direction) {
+      parent.postMessage({ pluginMessage: { type: 'create-connected', direction } }, '*');
+    }
   </script>
 </body>
 </html>
