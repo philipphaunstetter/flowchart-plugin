@@ -6,6 +6,7 @@
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": ["figjam"],
+  "containsWidget": true,
   "networkAccess": {
     "allowedDomains": [
       "https://flowchart-backend.vercel.app"
